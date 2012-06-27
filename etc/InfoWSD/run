@@ -1,0 +1,14 @@
+#!/bin/sh
+exec 2>&1
+cd /home/macholic/project/InfoWSD
+PATH=/usr/local/bin:/usr/bin:/bin
+PATH=/home/macholic/perl5/perlbrew/perls/perl-5.14.2/bin:$PATH
+PATH=/home/macholic/perl5/perlbrew/bin:$PATH
+export PATH
+echo $PATH
+
+sleep 1
+exec setuidgid macholic \
+    plackup \
+        -a /home/macholic/project/InfoWSD/app.psgi \
+            -s Starman --port 8081 workers 2
