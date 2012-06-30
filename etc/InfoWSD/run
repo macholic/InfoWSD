@@ -10,7 +10,6 @@ echo $PATH
 sleep 1
 exec setuidgid macholic \
     plackup \
-        -r \
         -a /home/macholic/project/InfoWSD/app.psgi \
         -R /home/macholic/project/InfoWSD/lib \
         -s Starman --port 8081 workers 2

@@ -25,8 +25,8 @@
                 <a class="brand" href="#">InfoWSD</a>
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="#">Home</a></li>
-                        <li><a href="#">Link</a></li>
+                        <li class="active"><a href="/">Home</a></li>
+                        <li><a href="/api/test">Check API</a></li>
                     </ul>
                 </div>
             </div>
