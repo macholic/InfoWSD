@@ -4,14 +4,16 @@ We are member of modern software development Education.
 
 using:
 
--Amon2
+- perl5.14.2
 
--Text::Xslate(TTerse)
+- Amon2
 
--Teng
+- Text::Xslate(TTerse)
 
--Nginx
+- Teng(with mysql)
 
--Startman
+- Nginx
 
--daemontools
+- Startman
+
+- daemontools
