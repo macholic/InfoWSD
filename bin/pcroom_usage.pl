@@ -4,8 +4,7 @@ use strict;
 use warnings;
 use LWP::UserAgent;
 use HTML::TreeBuilder;
-use Encode qw/decode/;
-use Encode qw/encode/;
+use Encode qw/decode encode/;
 
 my $url = 'http://www3.sci.waseda.ac.jp/tools/pcroom/pcroomstat.php';
 
