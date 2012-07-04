@@ -1,1 +1,1 @@
-{"items":[% json %]}
+{"items":[% json | mark_raw %]}
