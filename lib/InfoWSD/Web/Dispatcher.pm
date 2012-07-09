@@ -14,8 +14,8 @@ use constant OFF => 0;
 
 any '/' => sub {
     my ($c) = @_;
-    my @test = $c->db->search('test', {}, { order_by => 'id desc' });
-    $c->render('index.tt', { test => \@test });
+    my @tests = $c->db->search('test', {}, { order_by => 'id asc' });
+    $c->render('index.tt', { tests => \@tests });
 };
 
 post '/account/logout' => sub {

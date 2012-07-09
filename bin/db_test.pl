@@ -8,13 +8,17 @@ use InfoWSD;
 use Data::Dumper;
 
 my $db = InfoWSD->new->db;
-my $tests = $db->search('test', +{ id => { in => [1, 2] } }, +{ order_by => 'id asc' });
+my $tests = $db->search('test', +{
+    id => +{ in => [qw/1 2 4 5/] },
+    }, +{
+    order_by => 'id asc' }
+);
 while (my $test = $tests->next) {
-    print $test->id_with_body , "\n";
+    print $test->id_body_as_text , "\n";
 }
 
 $db->insert(
     'test' => {
-        body => "from script test test",
+        body => "from script",
     }
 );

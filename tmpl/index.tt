@@ -6,9 +6,9 @@
 <p>detail is soon. please wait!<p>
 
 <hr />
-[% FOR t IN test %]
+[%- FOR t IN tests %]
 <p>
-[% t.body | dump %]
+[%- t.id_body_as_text -%]
 </p>
-[% END %]
+[% END -%]
 [% END %]
