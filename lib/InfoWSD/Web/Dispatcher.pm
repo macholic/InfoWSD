@@ -4,6 +4,7 @@ use warnings;
 use utf8;
 use Amon2::Web::Dispatcher::Lite;
 use JSON::Syck;
+use Data::Dumper;
 
 use constant OK  => 1;
 use constant NO  => 0;
@@ -13,7 +14,8 @@ use constant OFF => 0;
 
 any '/' => sub {
     my ($c) = @_;
-    $c->render('index.tt');
+    my @test = $c->db->search('test', {}, { order_by => 'id desc' });
+    $c->render('index.tt', { test => \@test });
 };
 
 post '/account/logout' => sub {

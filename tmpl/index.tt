@@ -5,4 +5,10 @@
 <h2>This page is index.</h2>
 <p>detail is soon. please wait!<p>
 
+<hr />
+[% FOR t IN test %]
+<p>
+[% t.body | dump %]
+</p>
+[% END %]
 [% END %]
