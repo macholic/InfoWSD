@@ -6,6 +6,7 @@ use parent qw(Teng);
 use InfoWSD::DateTime;
 
 __PACKAGE__->load_plugin('Pager');
+__PACKAGE__->load_plugin('BulkInsert');
 
 sub _before_insert {
     my $self = shift;

@@ -5,6 +5,10 @@ use warnings;
 use LWP::UserAgent;
 use HTML::TreeBuilder;
 use Encode qw/decode encode/;
+use DBI;
+use Data::Dumper;
+use lib qw(/home/macholic/project/InfoWSD/lib);
+use InfoWSD;
 
 my $url = 'http://www3.sci.waseda.ac.jp/tools/pcroom/pcroomstat.php';
 
@@ -20,7 +24,6 @@ my %pcroom_map = (
         '57号館 製図/CAD室' => 'Z'
 );
 
-
 sub http_request {
 
         my $url = $_[0];
@@ -28,6 +31,7 @@ sub http_request {
         my $ua = LWP::UserAgent->new;
         my $req = HTTP::Request->new(GET=>$url);
         my $res = $ua->request($req);
+        die unless $res && $res->is_success;
         my $body = encode('UTF-8', decode('EUC-JP', $res->content));
 
         my $tree = HTML::TreeBuilder->new;
@@ -39,52 +43,67 @@ sub http_request {
 my $tree = &http_request($url);
 my @rooms = $tree->look_down('class', 'pcroom');
 
-#my @rooms_usage[@rooms];
+my $wsd = InfoWSD->new;
+my @room_usages;
+
+my $sequence = InfoWSD::DateTime->now->strftime("%Y%m%d%H%M%S");
 
 foreach my $room (@rooms) {
 
-        my $name = $room->as_text;
-        my $status = 0;
-        my $usage_rate = 0;
-        my $capacity = 0;
-        my $class = '';
-        my $extra => '';
+    my $name = $room->as_text;
+    my $status = 0;
+    my $usage_rate = 0;
+    my $capacity = 0;
+    my $class = '';
+    my $extra => '';
 
-        # オープン中の場合
-        if ($room->right()->as_text =~ 'オープン利用中') {
-                $status = 1;
+    # オープン中の場合
+    if ($room->right()->as_text =~ 'オープン利用中') {
+        $status = 1;
 
-                my $s = $room->right()->right()->as_text;
+        my $s = $room->right()->right()->as_text;
 
-                # 利用率
-                if ($s =~ /利用率：([0-9]*)%/) {
-                        $usage_rate = $1;
-                }
-
-                # キャパシティ
-                if ($s =~ /\([0-9]* \/ ([0-9]*)\)/) {
-                        $capacity = $1;
-                }
-
-        # 授業で使われている場合
-        } else {
-                $status = 0;
-
-                # クラス
-                $class = $room->right()->right()->as_text;
+        # 利用率
+        if ($s =~ /利用率：([0-9]*)%/) {
+                $usage_rate = $1;
         }
 
-        my %room_usage = (
-            'name' => $pcroom_map{$room->as_text},
-            'status' => $status,
-            'usage_rate' => $usage_rate,
-            'capacity' => $capacity,
-            'class' => $class,
-            'extra' => $extra
-        );
-
-        print "==============================\n";
-        while ((my $key, my $value) = each %room_usage) {
-                print "$key:  $value\n";
+        # キャパシティ
+        if ($s =~ /\([0-9]* \/ ([0-9]*)\)/) {
+                $capacity = $1;
         }
+
+    # 授業で使われている場合
+    } else {
+        $status = 0;
+
+        # クラス
+        $class = $room->right()->right()->as_text;
+    }
+
+    my %room_usage = (
+        'sequence' => $sequence,
+        'name' => $pcroom_map{$room->as_text},
+        'status' => $status,
+        'usage_rate' => $usage_rate,
+        'capacity' => $capacity,
+        'class_name' => $class,
+        'extra' => $extra
+    );
+
+    push @room_usages, \%room_usage;
 }
+
+# update pc_room_log table
+$wsd->db->bulk_insert('pc_room_log', \@room_usages);
+
+#my $latest_sequence = $wsd->db->single('pc_room_log', {},  +{order_by => 'sequence desc'})->sequence;
+#my $latest_rows = $wsd->db->search('pc_room_log', {sequence => $latest_sequence}, +{});
+
+for my $room_usage (@room_usages) {
+    delete($room_usage->{'sequence'});
+}
+
+# update pc_room_now table
+$wsd->db->delete('pc_room_now');
+$wsd->db->bulk_insert('pc_room_now', \@room_usages);

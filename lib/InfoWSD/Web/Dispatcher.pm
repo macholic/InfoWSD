@@ -18,16 +18,49 @@ any '/' => sub {
     $c->render('index.tt', { tests => \@tests });
 };
 
-post '/account/logout' => sub {
+any '/api/pc/' => sub {
     my ($c) = @_;
-    $c->session->expire();
-    $c->redirect('/');
+    my $pc_room_nows = $c->db->search('pc_room_now', {}, { order_by => 'id asc' });
+    if ($c->req->param('fmt') eq 'json') {
+        my $json;
+        $c->render('pc/default.json', { json => $json });
+    }
+    else {
+        $c->render('pc/no_items.tt');
+    }
+};
+
+any '/api/class/' => sub {
+    my ($c) = @_;
+    my $json;
+    $c->render('class/default.json', { json => $json });
 };
 
 any '/api/test' => sub {
     my ($c) = @_;
+    my $type = $c->req->param('type');
     my $t_data;
-    $t_data = +{
+    if ($type eq 'pc') {
+        $t_data = _make_pc_testdata();
+    }
+    elsif ($type eq 'class') {
+        $t_data = _make_class_testdata();
+    }
+    else {
+        $t_data = [{
+            name => 'foo',
+            type => 'test',
+        }, {
+            name => 'bar',
+            type => 'hoge',
+        }];
+    }
+    my $json = JSON::Syck::Dump($t_data);
+    $c->render('api/test.json', { json => $json });
+};
+
+sub _make_pc_testdata {
+    return  +{
         A => +{
             status => OK,
             usage_rate => 66,
@@ -100,7 +133,7 @@ any '/api/test' => sub {
                 test => ON,
             },
         },
-        CAD => +{
+        Z => +{
             status => OK,
             usage_rate => 66,
             capacity => 101,
@@ -110,8 +143,21 @@ any '/api/test' => sub {
             },
         },
     };
-    my $json = JSON::Syck::Dump($t_data);
-    $c->render('api/test.json', { json => $json });
-};
+}
+
+sub _make_class_testdata {
+    return [{
+        period => 1,
+        building => 63,
+        room => 304,
+        lan => OK,
+    }, {
+        period => 3,
+        building => 54,
+        room => 102,
+        lan => NO,
+    }];
+}
+
 
 1;
