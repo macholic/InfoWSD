@@ -22,18 +22,28 @@ any '/api/pc/' => sub {
     my ($c) = @_;
     my $pc_room_nows = $c->db->search('pc_room_now', {}, { order_by => 'id asc' });
     if ($c->req->param('fmt') eq 'json') {
-        my $json;
-        $c->render('pc/default.json', { json => $json });
+        my %data;
+        while (my $pc_room_now = $pc_room_nows->next) {
+            $data{$pc_room_now->name} = +{
+                status => $pc_room_now->status,
+                usage_rate => $pc_room_now->usage_rate,
+                capacity => $pc_room_now->capacity,
+                class_name => $pc_room_now->class_name,
+                extra => $pc_room_now->extra,
+            };
+        }
+        my $json = JSON::Syck::Dump(\%data);
+        $c->render('api/pc/default.json', { json => $json });
     }
     else {
-        $c->render('pc/no_items.tt');
+        $c->render('api/pc/no_items.tt');
     }
 };
 
 any '/api/class/' => sub {
     my ($c) = @_;
     my $json;
-    $c->render('class/default.json', { json => $json });
+    $c->render('api/class/default.json', { json => $json });
 };
 
 any '/api/test' => sub {
