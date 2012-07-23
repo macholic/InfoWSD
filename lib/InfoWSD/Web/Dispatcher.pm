@@ -166,7 +166,7 @@ sub _make_class_testdata {
     return [{
         id => 1,
         status => 1,
-        week => 'mon',
+        day => 'mon',
         period => 1,
         building => 63,
         room => 304,
@@ -177,7 +177,7 @@ sub _make_class_testdata {
     }, {
         id => 3,
         status => 1,
-        week => 'mon',
+        day => 'mon',
         period => 3,
         building => 54,
         room => 203,
@@ -188,7 +188,7 @@ sub _make_class_testdata {
     }, {
         id => 5,
         status => 1,
-        week => 'mon',
+        day => 'mon',
         period => 6,
         building => 54,
         room => 104,
@@ -199,7 +199,7 @@ sub _make_class_testdata {
     }, {
         id => 6,
         status => 1,
-        week => 'mon',
+        day => 'mon',
         period => 6,
         building => 53,
         room => 303,
@@ -210,7 +210,7 @@ sub _make_class_testdata {
     }, {
         id => 10,
         status => 1,
-        week => 'mon',
+        day => 'mon',
         period => 7,
         building => 52,
         room => 104,
